@@ -134,7 +134,7 @@ export default function Home() {
                 variant="outlined"
                 startIcon={<GitHub />}
                 component="a"
-                href="https://github.com/hongd"
+                href="https://github.com/hungdi"
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
@@ -152,7 +152,7 @@ export default function Home() {
                 variant="outlined"
                 startIcon={<LinkedIn />}
                 component="a"
-                href="https://www.linkedin.com/in/hongd"
+                href="https://www.linkedin.com/in/jihye-hong-19560547/"
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
