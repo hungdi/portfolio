@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { Container, Typography, Button, Box, Card, CardContent, Divider, Chip, Alert, Snackbar } from '@mui/material'
 import { GitHub, LinkedIn, Email, Article } from '@mui/icons-material'
+import Image from 'next/image'
 
 export default function Home() {
   const [openEmailAlert, setOpenEmailAlert] = React.useState(false);
@@ -21,22 +22,55 @@ export default function Home() {
       {/* Hero Section */}
       <Box
         sx={{
-          bgcolor: 'primary.main',
-          color: 'white',
-          py: 8,
           position: 'relative',
+          py: 4,
           overflow: 'hidden',
+          height: '60vh',
+          minHeight: '400px',
+          maxHeight: '600px',
+          backgroundImage: 'url("/images/hero-bg.jpg")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          display: 'flex',
+          alignItems: 'center',
         }}
       >
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, alignItems: 'center' }}>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="h2" component="h1" gutterBottom>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4))',
+            zIndex: 1,
+          }}
+        />
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', md: 'row' }, 
+            gap: 4, 
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <Box sx={{ flex: 1, color: 'white' }}>
+              <Typography variant="h2" component="h1" gutterBottom sx={{ 
+                fontWeight: 'bold',
+                fontSize: { xs: '2.5rem', md: '3.5rem' },
+                letterSpacing: '-0.02em',
+                color: '#fff'
+              }}>
                 안녕하세요,
                 <br />
                 홍지혜입니다
               </Typography>
-              <Typography variant="h5" gutterBottom sx={{ mb: 4 }}>
+              <Typography variant="h5" gutterBottom sx={{ 
+                mb: 4, 
+                fontWeight: 'medium',
+                color: 'rgba(255, 255, 255, 0.9)',
+                fontSize: { xs: '1.2rem', md: '1.5rem' }
+              }}>
                 데이터 중심의 문제 해결을 추구하는 개발자입니다
               </Typography>
               <Box sx={{ display: 'flex', gap: 2 }}>
@@ -46,47 +80,89 @@ export default function Home() {
                   size="large"
                   component={Link}
                   href="/projects"
+                  sx={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    color: '#000',
+                    '&:hover': {
+                      backgroundColor: '#fff',
+                    }
+                  }}
                 >
                   프로젝트 보기
                 </Button>
                 <Button
                   variant="outlined"
-                  color="inherit"
                   size="large"
                   onClick={handleEmailClick}
+                  sx={{
+                    borderColor: 'rgba(255, 255, 255, 0.9)',
+                    color: '#fff',
+                    '&:hover': {
+                      borderColor: '#fff',
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    }
+                  }}
                 >
                   연락하기
                 </Button>
               </Box>
             </Box>
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: { xs: 'row', md: 'column' }, 
+              gap: 2,
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              padding: 2,
+              borderRadius: 2,
+            }}>
               <Button
                 variant="outlined"
-                color="inherit"
                 startIcon={<Email />}
                 onClick={handleEmailClick}
+                sx={{
+                  color: '#fff',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                  '&:hover': {
+                    borderColor: '#fff',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  }
+                }}
               >
                 연락처
               </Button>
               <Button
                 variant="outlined"
-                color="inherit"
                 startIcon={<GitHub />}
                 component="a"
                 href="https://github.com/hongd"
                 target="_blank"
                 rel="noopener noreferrer"
+                sx={{
+                  color: '#fff',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                  '&:hover': {
+                    borderColor: '#fff',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  }
+                }}
               >
                 GitHub
               </Button>
               <Button
                 variant="outlined"
-                color="inherit"
                 startIcon={<LinkedIn />}
                 component="a"
                 href="https://www.linkedin.com/in/hongd"
                 target="_blank"
                 rel="noopener noreferrer"
+                sx={{
+                  color: '#fff',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                  '&:hover': {
+                    borderColor: '#fff',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  }
+                }}
               >
                 LinkedIn
               </Button>
