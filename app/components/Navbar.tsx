@@ -43,7 +43,7 @@ export default function Navbar() {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          개발자 포트폴리오
+          홍지혜 포트폴리오
         </Typography>
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           {menuItems.map((item) => (
