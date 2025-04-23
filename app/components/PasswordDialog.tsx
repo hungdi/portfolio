@@ -17,8 +17,6 @@ interface PasswordDialogProps {
   onSuccess: () => void
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-
 export default function PasswordDialog({ open, onClose, onSuccess }: PasswordDialogProps) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -29,7 +27,7 @@ export default function PasswordDialog({ open, onClose, onSuccess }: PasswordDia
     setError('')
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
+      const response = await fetch('/api/auth/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
