@@ -38,10 +38,25 @@ export async function POST(request: Request) {
 
     const derivedHash = derivedKey.toString('hex')
     console.log('생성된 해시:', derivedHash)
-    console.log('비밀번호 일치 여부:', derivedHash === STORED_HASH)
+    
+    // 해시 비교를 위한 상세 로깅
+    console.log('=== 해시 비교 상세 정보 ===')
+    console.log('저장된 해시 길이:', STORED_HASH.length)
+    console.log('생성된 해시 길이:', derivedHash.length)
+    console.log('해시 일치 여부:', derivedHash === STORED_HASH)
+    console.log('해시 비교 결과:', {
+      stored: STORED_HASH,
+      derived: derivedHash,
+      isEqual: derivedHash === STORED_HASH
+    })
+    console.log('=== 해시 비교 상세 정보 종료 ===')
+
+    // 문자열 비교 전에 trim() 적용
+    const isMatch = derivedHash.trim() === STORED_HASH.trim()
+    console.log('최종 비밀번호 일치 여부:', isMatch)
     console.log('=== 비밀번호 검증 종료 ===')
 
-    if (derivedHash === STORED_HASH) {
+    if (isMatch) {
       const response = NextResponse.json({ success: true })
       response.cookies.set('session', crypto.randomBytes(32).toString('hex'), {
         httpOnly: true,
