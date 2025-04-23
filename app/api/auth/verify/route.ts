@@ -16,6 +16,11 @@ export async function POST(request: Request) {
 
     const { password } = await request.json()
 
+    console.log('=== 비밀번호 검증 시작 ===')
+    console.log('입력된 비밀번호:', password)
+    console.log('사용된 솔트:', SALT)
+    console.log('저장된 해시:', STORED_HASH)
+
     if (!password) {
       return NextResponse.json(
         { error: '비밀번호가 필요합니다' },
@@ -32,6 +37,9 @@ export async function POST(request: Request) {
     )
 
     const derivedHash = derivedKey.toString('hex')
+    console.log('생성된 해시:', derivedHash)
+    console.log('비밀번호 일치 여부:', derivedHash === STORED_HASH)
+    console.log('=== 비밀번호 검증 종료 ===')
 
     if (derivedHash === STORED_HASH) {
       const response = NextResponse.json({ success: true })

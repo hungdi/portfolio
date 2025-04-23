@@ -26,6 +26,9 @@ export default function PasswordDialog({ open, onClose, onSuccess }: PasswordDia
     setIsLoading(true)
     setError('')
 
+    console.log('=== 비밀번호 전송 시작 ===')
+    console.log('전송할 비밀번호:', password)
+
     try {
       const response = await fetch('/api/auth/verify', {
         method: 'POST',
@@ -35,8 +38,11 @@ export default function PasswordDialog({ open, onClose, onSuccess }: PasswordDia
         body: JSON.stringify({ password }),
       })
 
+      console.log('응답 상태:', response.status)
+      const data = await response.json()
+      console.log('응답 데이터:', data)
+
       if (!response.ok) {
-        const data = await response.json()
         throw new Error(data.error || '비밀번호가 일치하지 않습니다')
       }
 
@@ -50,6 +56,7 @@ export default function PasswordDialog({ open, onClose, onSuccess }: PasswordDia
       }
     } finally {
       setIsLoading(false)
+      console.log('=== 비밀번호 전송 종료 ===')
     }
   }
 
