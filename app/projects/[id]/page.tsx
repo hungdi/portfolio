@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Container, Typography, Box, Card, CardContent, Chip, Button, IconButton } from '@mui/material'
+import { Container, Typography, Box, Card, CardContent, Chip, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material'
 import { projects } from '../../data/projects'
 import PasswordDialog from '../../components/PasswordDialog'
 import LockIcon from '@mui/icons-material/Lock'
@@ -15,6 +15,8 @@ export default function ProjectDetail() {
   const project = projects.find(p => p.id === id)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showPasswordDialog, setShowPasswordDialog] = useState(false)
+  const [password, setPassword] = useState('')
+  const [open, setOpen] = useState(project?.isConfidential || false)
 
   const handleLogout = async () => {
     try {
@@ -24,7 +26,14 @@ export default function ProjectDetail() {
       setIsAuthenticated(false)
       router.refresh()
     } catch (error) {
-      console.error('로그아웃 실패:', error)
+      // 에러 처리
+    }
+  }
+
+  const handlePasswordSubmit = () => {
+    if (password === '1234') {
+      setIsAuthenticated(true)
+      setOpen(false)
     }
   }
 
@@ -66,6 +75,31 @@ export default function ProjectDetail() {
           ))}
         </ul>
       </Box>
+
+      {project.details.detailedGoals && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" gutterBottom>
+            상세 개발사항
+          </Typography>
+          <ul>
+            {project.details.detailedGoals.map((goal, index) => (
+              <li key={index}>
+                <Box
+                  sx={{
+                    filter: goal.isLocked ? 'blur(4px)' : 'none',
+                    transition: 'filter 0.3s ease',
+                    '&:hover': {
+                      filter: 'blur(2px)',
+                    },
+                  }}
+                >
+                  <Typography>{goal.text}</Typography>
+                </Box>
+              </li>
+            ))}
+          </ul>
+        </Box>
+      )}
 
       <Box sx={{ mb: 4 }}>
         <Typography variant="h6" gutterBottom>
@@ -146,6 +180,24 @@ export default function ProjectDetail() {
         onClose={() => setShowPasswordDialog(false)}
         onSuccess={handlePasswordSuccess}
       />
+
+      <Dialog open={open} onClose={() => {}}>
+        <DialogTitle>비밀번호 입력</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="비밀번호"
+            type="password"
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handlePasswordSubmit}>확인</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   )
 } 

@@ -8,6 +8,7 @@ export interface Project {
   details: {
     overview: string;
     goals: string[];
+    detailedGoals?: { text: string; isLocked?: boolean }[];
     technologies: string[];
     achievements: string[];
   };
@@ -41,6 +42,7 @@ export const projects: Project[] = [
     category: '농협은행',
     period: "2018 - 2025",
     description: "NH농협카드 차세대시스템 구축에 따른 대학등록금 업무 연계 개발",
+    isConfidential: true,
     details: {
       overview: "NH농협카드 차세대시스템 구축에 따른 대학등록금 업무 연계 개발을 진행했습니다.",
       goals: [
@@ -48,6 +50,10 @@ export const projects: Project[] = [
         "은행-카드, 상호-카드 별도의 접근 방식에서, 상호-은행(gse)-카드 방식으로 전환 개발",
         "기존 파일 대사 방식에서, 실시간 전문 대사 방식으로 카드-계정계 대사 전면 개편",
         "카드 수납 관련 거래 개발 및 테스트 진행"
+      ],
+      detailedGoals: [
+        { text: "단독 서버로 구축되어있던 카드시스템 은행 뱅킹 서버로 이전구축", isLocked: true },
+        { text: "은행-카드, 상호-카드 별도의 접근 방식에서, 상호-은행(gse)-카드 방식으로 전환 개발", isLocked: true }
       ],
       technologies: ["React", "JavaScript", "HTML", "CSS", "Node.js"],
       achievements: [

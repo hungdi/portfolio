@@ -19,16 +19,8 @@ interface PasswordDialogProps {
 
 export default function PasswordDialog({ open, onClose, onSuccess }: PasswordDialogProps) {
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async () => {
-    setIsLoading(true)
-    setError('')
-
-    console.log('=== 비밀번호 전송 시작 ===')
-    console.log('전송할 비밀번호:', password)
-
     try {
       const response = await fetch('/api/auth/verify', {
         method: 'POST',
@@ -38,25 +30,13 @@ export default function PasswordDialog({ open, onClose, onSuccess }: PasswordDia
         body: JSON.stringify({ password }),
       })
 
-      console.log('응답 상태:', response.status)
       const data = await response.json()
-      console.log('응답 데이터:', data)
 
-      if (!response.ok) {
-        throw new Error(data.error || '비밀번호가 일치하지 않습니다')
+      if (data.success) {
+        onSuccess()
       }
-
-      onSuccess()
-      setPassword('')
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message)
-      } else {
-        setError('알 수 없는 오류가 발생했습니다')
-      }
-    } finally {
-      setIsLoading(false)
-      console.log('=== 비밀번호 전송 종료 ===')
+      // 에러 처리
     }
   }
 
@@ -72,22 +52,11 @@ export default function PasswordDialog({ open, onClose, onSuccess }: PasswordDia
           fullWidth
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          error={!!error}
-          helperText={error}
-          disabled={isLoading}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={isLoading}>
-          취소
-        </Button>
-        <Button 
-          onClick={handleSubmit} 
-          variant="contained"
-          disabled={isLoading}
-        >
-          {isLoading ? '확인 중...' : '확인'}
-        </Button>
+        <Button onClick={onClose}>취소</Button>
+        <Button onClick={handleSubmit}>확인</Button>
       </DialogActions>
     </Dialog>
   )
