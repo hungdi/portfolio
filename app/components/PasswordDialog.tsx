@@ -6,12 +6,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Button,
-  Box,
+  TextField,
   Typography,
 } from '@mui/material'
-import LockIcon from '@mui/icons-material/Lock'
 
 interface PasswordDialogProps {
   open: boolean
@@ -19,60 +17,73 @@ interface PasswordDialogProps {
   onSuccess: () => void
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+
 export default function PasswordDialog({ open, onClose, onSuccess }: PasswordDialogProps) {
   const [password, setPassword] = useState('')
-  const [error, setError] = useState(false)
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    // 비밀번호 해시 생성
-    const passwordHash = require('crypto')
-      .createHash('sha256')
-      .update(password)
-      .digest('hex')
+  const handleSubmit = async () => {
+    setIsLoading(true)
+    setError('')
 
-    // 환경 변수에서 저장된 해시와 비교
-    if (passwordHash === process.env.NEXT_PUBLIC_PROJECT_PASSWORD_HASH) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || '비밀번호가 일치하지 않습니다')
+      }
+
       onSuccess()
-      onClose()
-    } else {
-      setError(true)
+      setPassword('')
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError('알 수 없는 오류가 발생했습니다')
+      }
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <form onSubmit={handleSubmit}>
-        <DialogTitle>
-          <Box display="flex" alignItems="center" gap={1}>
-            <LockIcon />
-            <Typography variant="h6">비밀번호 입력</Typography>
-          </Box>
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="비밀번호"
-            type="password"
-            fullWidth
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value)
-              setError(false)
-            }}
-            error={error}
-            helperText={error ? "비밀번호가 일치하지 않습니다." : ""}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>취소</Button>
-          <Button type="submit" variant="contained" color="primary">
-            확인
-          </Button>
-        </DialogActions>
-      </form>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>비밀번호 입력</DialogTitle>
+      <DialogContent>
+        <TextField
+          autoFocus
+          margin="dense"
+          label="비밀번호"
+          type="password"
+          fullWidth
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={!!error}
+          helperText={error}
+          disabled={isLoading}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={isLoading}>
+          취소
+        </Button>
+        <Button 
+          onClick={handleSubmit} 
+          variant="contained"
+          disabled={isLoading}
+        >
+          {isLoading ? '확인 중...' : '확인'}
+        </Button>
+      </DialogActions>
     </Dialog>
   )
 } 

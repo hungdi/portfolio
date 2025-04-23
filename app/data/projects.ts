@@ -4,6 +4,7 @@ export interface Project {
   category: string;
   period: string;
   description: string;
+  isConfidential?: boolean;
   details: {
     overview: string;
     goals: string[];
@@ -61,6 +62,7 @@ export const projects: Project[] = [
     category: '농협은행',
     period: "2024 - 2025",
     description: "디지털금융 플랫폼전환 프로젝트에 따른 대응 개발",
+    isConfidential: true,
     details: {
       overview: "디지털 금융 채널 아키텍처 슬림화의 일환으로 전자금융 AP → 계정계 이관 프로젝트를 진행했습니다.",
       goals: [

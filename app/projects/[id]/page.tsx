@@ -1,17 +1,32 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useParams } from 'next/navigation'
-import { Container, Typography, Box, Card, CardContent, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material'
-import { projects } from '@/app/data/projects'
-import PasswordDialog from '@/app/components/PasswordDialog'
+import { useParams, useRouter } from 'next/navigation'
+import { Container, Typography, Box, Card, CardContent, Chip, Button, IconButton } from '@mui/material'
+import { projects } from '../../data/projects'
+import PasswordDialog from '../../components/PasswordDialog'
 import LockIcon from '@mui/icons-material/Lock'
+import { CalendarToday, Group } from '@mui/icons-material'
+import LogoutIcon from '@mui/icons-material/Logout'
 
 export default function ProjectDetail() {
   const { id } = useParams()
+  const router = useRouter()
   const project = projects.find(p => p.id === id)
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false)
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+      })
+      router.refresh()
+    } catch (error) {
+      console.error('로그아웃 실패:', error)
+    }
+  }
 
   if (!project) {
     return (
@@ -23,100 +38,78 @@ export default function ProjectDetail() {
 
   const isConfidential = project.id === 'nh-3' // 전자금융 차세대 시스템
 
+  console.log('Project ID:', project.id)
+  console.log('Is Confidential:', isConfidential)
+  console.log('Is Authenticated:', isAuthenticated)
+
+  const handlePasswordSuccess = () => {
+    setIsAuthenticated(true)
+    setShowPasswordDialog(false)
+  }
+
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Card>
-        <CardContent>
-          <Typography variant="h4" gutterBottom>
-            {project.title}
-          </Typography>
-          <Typography color="text.secondary" gutterBottom>
-            {project.category} | {project.period}
-          </Typography>
-          <Typography variant="body1" paragraph>
-            {project.description}
-          </Typography>
+    <Container maxWidth="lg" sx={{ py: 8 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Typography variant="h4" component="h1">
+          {project.title}
+        </Typography>
+        <IconButton onClick={handleLogout} color="primary">
+          <LogoutIcon />
+        </IconButton>
+      </Box>
 
-          {isConfidential && !isAuthenticated ? (
-            <Box
-              sx={{
-                position: 'relative',
-                filter: 'blur(8px)',
-                pointerEvents: 'none',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '300px',
-                backgroundColor: 'rgba(0, 0, 0, 0.1)',
-              }}
-            >
-              <LockIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
-              <Typography variant="h6" sx={{ mt: 2 }}>
-                대외비 프로젝트
-              </Typography>
-              <Button
-                variant="contained"
-                onClick={() => setIsPasswordDialogOpen(true)}
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  pointerEvents: 'auto',
-                }}
-              >
-                비밀번호 입력
-              </Button>
-            </Box>
-          ) : (
-            <>
-              <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-                프로젝트 개요
-              </Typography>
-              <Typography variant="body1" paragraph>
-                {project.details.overview}
-              </Typography>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6" gutterBottom>
+          개요
+        </Typography>
+        <Typography>
+          {project.details.overview}
+        </Typography>
+      </Box>
 
-              <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-                프로젝트 목표
-              </Typography>
-              <Box component="ul" sx={{ pl: 2 }}>
-                {project.details.goals.map((goal, index) => (
-                  <Typography component="li" key={index} paragraph>
-                    {goal}
-                  </Typography>
-                ))}
-              </Box>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6" gutterBottom>
+          목표
+        </Typography>
+        <ul>
+          {project.details.goals.map((goal, index) => (
+            <li key={index}>
+              <Typography>{goal}</Typography>
+            </li>
+          ))}
+        </ul>
+      </Box>
 
-              <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-                사용 기술
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {project.details.technologies.map((tech, index) => (
-                  <Chip key={index} label={tech} />
-                ))}
-              </Box>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6" gutterBottom>
+          사용 기술
+        </Typography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {project.details.technologies.map((tech, index) => (
+            <Button key={index} variant="outlined" size="small">
+              {tech}
+            </Button>
+          ))}
+        </Box>
+      </Box>
 
-              <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-                주요 성과
-              </Typography>
-              <Box component="ul" sx={{ pl: 2 }}>
-                {project.details.achievements.map((achievement, index) => (
-                  <Typography component="li" key={index} paragraph>
-                    {achievement}
-                  </Typography>
-                ))}
-              </Box>
-            </>
-          )}
-        </CardContent>
-      </Card>
+      <Box>
+        <Typography variant="h6" gutterBottom>
+          성과
+        </Typography>
+        <ul>
+          {project.details.achievements.map((achievement, index) => (
+            <li key={index}>
+              <Typography>{achievement}</Typography>
+            </li>
+          ))}
+        </ul>
+      </Box>
 
       <PasswordDialog
-        open={isPasswordDialogOpen}
-        onClose={() => setIsPasswordDialogOpen(false)}
-        onSuccess={() => setIsAuthenticated(true)}
+        open={showPasswordDialog}
+        onClose={() => setShowPasswordDialog(false)}
+        onSuccess={handlePasswordSuccess}
       />
     </Container>
   )

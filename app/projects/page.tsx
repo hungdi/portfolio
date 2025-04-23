@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react'
 import { Container, Typography, Box, Card, CardContent, CardMedia, Chip, IconButton, Dialog, DialogContent, DialogTitle, Divider } from '@mui/material'
-import { CalendarToday, Group, Close } from '@mui/icons-material'
+import { CalendarToday, Group, Close, Lock } from '@mui/icons-material'
 import { projects, Project } from '../data/projects'
+import PasswordDialog from '../components/PasswordDialog'
 
 const categories = ['농협은행', 'LG전자', '석사과정', '개인프로젝트'] as const
 
@@ -36,6 +37,8 @@ const getProjectImage = (projectId: string) => {
 
 export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<string | null>(null)
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const handleProjectClick = (projectId: string) => {
     setSelectedProject(projectId)
@@ -43,6 +46,12 @@ export default function Projects() {
 
   const handleClose = () => {
     setSelectedProject(null)
+    setIsAuthenticated(false)
+  }
+
+  const handlePasswordSuccess = () => {
+    setIsAuthenticated(true)
+    setShowPasswordDialog(false)
   }
 
   const getSelectedProject = () => {
@@ -154,7 +163,7 @@ export default function Projects() {
                         {project.title}
                       </Typography>
                       <Typography color="text.secondary" sx={{ mb: 2 }}>
-                        {project.description}
+                        {project.isConfidential ? '비밀번호가 필요한 프로젝트입니다.' : project.description}
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                         <CalendarToday sx={{ fontSize: 'small', mr: 1 }} />
@@ -203,17 +212,58 @@ export default function Projects() {
                     {getSelectedProject()?.details.overview}
                   </Typography>
                 </Box>
-                <Box sx={{ mb: 3 }}>
+                <Box sx={{ mb: 3, position: 'relative' }}>
                   <Typography variant="h6" gutterBottom>
                     목표
                   </Typography>
                   <ul>
                     {getSelectedProject()?.details.goals.map((goal, index) => (
                       <li key={index}>
-                        <Typography>{goal}</Typography>
+                        <Typography sx={{ 
+                          filter: getSelectedProject()?.isConfidential && !isAuthenticated ? 'blur(8px)' : 'none',
+                          userSelect: 'none',
+                          WebkitUserSelect: 'none',
+                          msUserSelect: 'none',
+                          MozUserSelect: 'none',
+                          pointerEvents: getSelectedProject()?.isConfidential && !isAuthenticated ? 'none' : 'auto',
+                        }}>
+                          {getSelectedProject()?.isConfidential && !isAuthenticated ? '비밀번호가 필요한 프로젝트입니다.' : goal}
+                        </Typography>
                       </li>
                     ))}
                   </ul>
+                  {getSelectedProject()?.isConfidential && !isAuthenticated && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        zIndex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 1,
+                      }}
+                    >
+                      <IconButton
+                        onClick={() => setShowPasswordDialog(true)}
+                        sx={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(255, 255, 255, 1)',
+                          },
+                          width: 48,
+                          height: 48,
+                        }}
+                      >
+                        <Lock sx={{ fontSize: 32 }} />
+                      </IconButton>
+                      <Typography variant="body2" color="text.secondary">
+                        비밀번호 입력
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="h6" gutterBottom>
@@ -221,7 +271,10 @@ export default function Projects() {
                   </Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                     {getSelectedProject()?.details.technologies.map((tech, index) => (
-                      <Chip key={index} label={tech} />
+                      <Chip 
+                        key={index} 
+                        label={tech} 
+                      />
                     ))}
                   </Box>
                 </Box>
@@ -232,7 +285,9 @@ export default function Projects() {
                   <ul>
                     {getSelectedProject()?.details.achievements.map((achievement, index) => (
                       <li key={index}>
-                        <Typography>{achievement}</Typography>
+                        <Typography>
+                          {achievement}
+                        </Typography>
                       </li>
                     ))}
                   </ul>
@@ -241,6 +296,12 @@ export default function Projects() {
             </>
           )}
         </Dialog>
+
+        <PasswordDialog
+          open={showPasswordDialog}
+          onClose={() => setShowPasswordDialog(false)}
+          onSuccess={handlePasswordSuccess}
+        />
       </Container>
     </>
   )
